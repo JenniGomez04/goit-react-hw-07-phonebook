@@ -1,28 +1,43 @@
 import { createSlice } from '@reduxjs/toolkit';
 
+// Creación del slice de Redux para manejar el estado de los contactos
+
 const contactsSlice = createSlice({
-  name: 'contacts',
+  name: 'contacts', // Nombre del slice
   initialState: {
-    list: [
-      { id: 'id-1', name: 'Rosie', number: '459-12-56' },
-      { id: 'id-2', name: 'Hermione', number: '443-89-12' },
-      { id: 'id-3', name: 'Eden', number: '645-17-79' },
-      { id: 'id-4', name: 'Annie', number: '227-91-26' },
-    ],
+    items: [], // Array de contactos
+    isLoading: false, // Indicador de carga
+    error: null, // Error en caso de fallo
   },
-  reducers: {
+  reducers: { // Reducers para manejar las acciones relacionadas con los contactos
+    fetchContactsStart(state) {
+      state.isLoading = true;  // Marcar el inicio de la carga
+      state.error = null;  // Limpiar el error
+    },
+    fetchContactsSuccess(state, action) {
+      state.items = action.payload; // Actualizar el array de contactos con los datos recibidos
+      state.isLoading = false; // Marcar el fin de la carga
+      state.error = null; // Limpiar el error
+    },
+    fetchContactsFailure(state, action) {
+      state.isLoading = false; // Marcar el fin de la carga
+      state.error = action.payload; // Establecer el error recibido
+    },
     addContact(state, action) {
       console.log(action);
-      state.list = [...state.list, action.payload];
+      state.items.push(action.payload); // Agregar un nuevo contacto al array de contactos
     },
     deleteContact(state, action) {
-      state.list = state.list.filter(contact => contact.id !== action.payload);
+      state.items = state.items.filter(contact => contact.id !== action.payload);
     },
   },
 });
 
-export const { addContact, deleteContact } = contactsSlice.actions;
-export const сontactsReducer = contactsSlice.reducer;
+
+// Exportar las acciones y el reducer generados por el slice
+
+export const { fetchContactsStart, fetchContactsSuccess, fetchContactsFailure, addContact, deleteContact } = contactsSlice.actions;
+export const сontactsReducer = contactsSlice.reducer;  // Reducer generado por el slice
 
 
 
