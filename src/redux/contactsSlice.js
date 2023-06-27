@@ -1,43 +1,52 @@
 import { createSlice } from '@reduxjs/toolkit';
+import { addContactsThunk, deleteContactsThunk, getContactsThunk } from './contacts-thunk';
 
-// Creación del slice de Redux para manejar el estado de los contactos
+// Función para manejar el estado 'pending' (carga) de las acciones asíncronas.
+const handlePending = state => {
+  state.isLoading = true;
+};
 
+// Función para manejar el estado 'rejected' (rechazado) de las acciones asíncronas
+const handleRejected = (state, { payload }) => {
+  state.error = payload;
+};
+
+// Crear el slice de Redux
 const contactsSlice = createSlice({
   name: 'contacts', // Nombre del slice
   initialState: {
     items: [], // Array de contactos
-    isLoading: false, // Indicador de carga
-    error: null, // Error en caso de fallo
+    isLoading: false, // Estado de carga
+    error: null, // Error
   },
-  reducers: { // Reducers para manejar las acciones relacionadas con los contactos
-    fetchContactsStart(state) {
-      state.isLoading = true;  // Marcar el inicio de la carga
-      state.error = null;  // Limpiar el error
-    },
-    fetchContactsSuccess(state, action) {
-      state.items = action.payload; // Actualizar el array de contactos con los datos recibidos
-      state.isLoading = false; // Marcar el fin de la carga
-      state.error = null; // Limpiar el error
-    },
-    fetchContactsFailure(state, action) {
-      state.isLoading = false; // Marcar el fin de la carga
-      state.error = action.payload; // Establecer el error recibido
-    },
-    addContact(state, action) {
-      console.log(action);
-      state.items.push(action.payload); // Agregar un nuevo contacto al array de contactos
-    },
-    deleteContact(state, action) {
-      state.items = state.items.filter(contact => contact.id !== action.payload);
-    },
+
+  extraReducers: builder => {
+    builder
+      .addCase(getContactsThunk.pending, handlePending) // Manejar el estado 'pending' de la acción getContactsThunk
+      .addCase(getContactsThunk.rejected, handleRejected) // Manejar el estado 'rejected' de la acción getContactsThunk
+      .addCase(getContactsThunk.fulfilled, (state, { payload }) => {
+        state.items = payload; // Actualizar el array de contactos con los contactos obtenidos
+      })
+
+      .addCase(addContactsThunk.pending, handlePending)
+      .addCase(addContactsThunk.rejected, handleRejected)
+      .addCase(addContactsThunk.fulfilled, (state, { payload }) => {
+        state.items = [payload, ...state.items]; // Agregar el nuevo contacto al array de contactos
+      })
+
+      .addCase(deleteContactsThunk.pending, handlePending)
+      .addCase(deleteContactsThunk.rejected, handleRejected)
+      .addCase(deleteContactsThunk.fulfilled, (state, { payload }) => {
+        state.items = state.items.filter(item => item.id !== payload.id); // Eliminar el contacto del array de contactos
+      });
   },
 });
 
 
-// Exportar las acciones y el reducer generados por el slice
+// Exportar las acciones y el reducer del slice
 
-export const { fetchContactsStart, fetchContactsSuccess, fetchContactsFailure, addContact, deleteContact } = contactsSlice.actions;
-export const сontactsReducer = contactsSlice.reducer;  // Reducer generado por el slice
+export const { addContactAction, deleteContactAction } = contactsSlice.actions;
+export const сontactsReducer = contactsSlice.reducer;
 
 
 

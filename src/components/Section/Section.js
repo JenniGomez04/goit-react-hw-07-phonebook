@@ -2,7 +2,8 @@ import React from 'react';
 import { Title } from './Section.styled';
 import PropTypes from 'prop-types';
 
-// Componente renderiza una sección con un título y contenido
+// Renderizar el título de la sección utilizando el componente 'Title y el contenido.
+// {children} Renderizar el contenido de la sección.
 
 export const Section = ({ title, children }) => {
   return (

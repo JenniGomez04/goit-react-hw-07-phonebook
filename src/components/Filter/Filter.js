@@ -3,15 +3,13 @@ import { useDispatch } from 'react-redux/es/exports';
 import { filterContacts } from 'redux/filterSlice';
 import { FormStyled } from './Form.styled';
 
-// Se encarga de manejar el filtro de busqueda de los contactos.
+//Se encarga de manejar el filtro de busquedad de los contactos.
 
 export const Filter = () => {
-  const dispatch = useDispatch();
-
-// Maneja el cambio en el campo de filtro y despacha la acción para filtrar los contactos
+  const dispatch = useDispatch(); // Obtener la función 'dispatch' del store utilizando useDispatch.
 
   const handleFilterChange = e => {
-    dispatch(filterContacts(e.target.value));
+    dispatch(filterContacts(e.target.value)); // Despachar la acción filterContacts con el valor del campo de búsqueda como argumento.
   };
 
   return (
@@ -21,7 +19,7 @@ export const Filter = () => {
         <input
           type="text"
           name="name"
-          onChange={handleFilterChange}
+          onChange={handleFilterChange} // Llamar a la función handleFilterChange cuando el valor del campo de búsqueda cambia
         ></input>
       </label>
     </FormStyled>

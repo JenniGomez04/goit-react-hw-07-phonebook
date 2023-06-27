@@ -1,55 +1,32 @@
-import React, { useState, useEffect } from 'react';
 import { Table } from './Contacts.styled';
 import { useDispatch, useSelector } from 'react-redux';
 import { deleteContactsThunk } from '../../redux/contacts-thunk';
-import { getFilter } from '../../redux/selectors';
-import { getContacts} from '../Services/contactsAPI';
+import { selectFilteredContacts } from '../../redux/selectors';
+
 
 export const Contacts = () => {
-  const dispatch = useDispatch();
+  const dispatch = useDispatch(); // Obtener a la función 'dispatch' del store utilizando useDispatch
 
-  // Obtiene el filtro del estado global de Redux
-  const filterQuery = useSelector(getFilter);
+  // Obtener los contactos filtrados del store utilizando el selector selectFilteredContacts
+  const contacts = useSelector(selectFilteredContacts);
 
-  // Estado local para almacenar los contactos filtrados
-  const [filteredContacts, setFilteredContacts] = useState([]);
-
-  // Función asincrónica para obtener los contactos de la API y actualizar el estado
-  const fetchData = async () => {
-    const contacts = await getContacts();
-    setFilteredContacts(contacts);
+  // Definir la función deleteContact que elimina un contacto por su id
+  const deleteContact = id => {
+    console.log(`El id Elimina fue el ${id}`);
+    dispatch(deleteContactsThunk(id)); // Despachar la acción deleteContactsThunk con el id proporcionado
   };
 
-  // Utiliza el hook useEffect para llamar a fetchData al montar el componente
-  useEffect(() => {
-    fetchData();
-  }, []);
-
-  // Normaliza el filtro obtenido del estado de Redux
-  const normalizedFilter = filterQuery.toLowerCase();
-
-  // Filtra los contactos basados en el filtro normalizado
-  const filteredContactsToShow = filteredContacts.filter(contact =>
-    contact.name.toLowerCase().includes(normalizedFilter)
-  );
-
-  // Manejador de la eliminación de un contacto
-  const deleteContactHandler = async id => {
-    await dispatch(deleteContactsThunk(id)); // Invoca el thunk deleteContactsThunk para eliminar el contacto
-    fetchData(); // Vuelve a obtener los contactos después de la eliminación
-  };
-
-
+   // Renderizar el componente de tabla y los contactos en forma de filas de la tabla
   return (
     <Table>
       <tbody>
-        {filteredContactsToShow.map(({ id, name, phone }) => {
+        {contacts.map(({ id, name, phone }) => {
           return (
             <tr key={id}>
               <td>{name}</td>
               <td>{phone}</td>
               <td>
-                <button onClick={() => deleteContactHandler(id)}>Delete</button>
+                <button onClick={() => deleteContact(id)}>Delete</button>
               </td>
             </tr>
           );
